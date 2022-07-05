@@ -48,7 +48,7 @@ ase_args:                                                                       
 format: extxyz
 # logging
 wandb: true                                                                        # we recommend using wandb for logging
-wandb_project: toluene-example                                                     # project name used in wandb
+wandb_project: MoWS2                                                    # project name used in wandb
 
 verbose: info                                                                      # the same as python logging, e.g. warning, info, debug, error; case insensitive
 log_batch_freq: 10                                                                 # batch frequency, how often to print training errors withinin the same epoch
