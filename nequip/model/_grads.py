@@ -56,3 +56,20 @@ def StressForceOutput(model: GraphModuleMixin) -> GradientOutput:
     ):
         raise ValueError("This model already has force or stress outputs.")
     return StressOutputModule(func=model)
+
+def ForceConstantOutput(model: GraphModuleMixin) -> GradientOutput:
+    r"""Add force constants to a model that predicts energy and forces.
+    Args:
+        model: the energy model to wrap. Must have ``AtomicDataDict.FORCE_KEY`` as an output.
+    Returns:
+        A ``GradientOutput`` wrapping ``model``.
+    """
+    if AtomicDataDict.FORCE_CONSTANTS_KEY in model.irreps_out:
+        raise ValueError("This model already has force constant outputs.")
+    return Gradient_GradientOutput(
+        func=model,
+        of=AtomicDataDict.FORCE_KEY,
+        wrt=AtomicDataDict.POSITIONS_KEY,
+        out_field=AtomicDataDict.FORCE_CONSTANTS_KEY,
+        sign=-1,  # force is the negative gradient
+    )
