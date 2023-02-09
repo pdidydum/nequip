@@ -392,7 +392,7 @@ class HessianOutput(GraphModuleMixin, torch.nn.Module):
         # The gradient of a single scalar w.r.t. something of a given shape and irrep just has that shape and irrep
         # Ex.: gradient of energy (0e) w.r.t. position vector (L=1) is also an L = 1 vector
         self.irreps_out.update(
-            {'pos': 1x1o, 'edge_index': None, 'node_attrs': 3x0e, 'node_features': 8x0e, 'edge_attrs': 1x0e+1x1o+1x2e, 'edge_embedding': 8x0e, 'atomic_energy': 1x0e, 'total_energy': 1x0e, 'forces': 1x1o, 'force_constants': 1x2e}
+            {f: '1x2e' for f, wrt in zip(self.out_field, self.wrt)}
         )
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
