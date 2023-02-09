@@ -117,7 +117,7 @@ def parse_command_line(args=None):
 
 def fresh_start(config):
     # we use add_to_config cause it's a fresh start and need to record it
-    check_code_version(config, add_to_config=True)
+    #check_code_version(config, add_to_config=True)
     _set_global_options(config)
 
     # = Make the trainer =
@@ -219,7 +219,7 @@ def restart(config):
 
     # note, "trainer.pth"/dictionary also store code versions,
     # which will not be stored in config and thus not checked here
-    check_code_version(config)
+    #check_code_version(config)
 
     # recursive loop, if same type but different value
     # raise error

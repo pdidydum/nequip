@@ -597,7 +597,7 @@ class Trainer:
         """
 
         dictionary = deepcopy(dictionary)
-        check_code_version(dictionary)
+        #check_code_version(dictionary)
 
         # update the restart and append option
         if append is not None:

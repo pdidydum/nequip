@@ -69,6 +69,10 @@ class GradientOutput(GraphModuleMixin, torch.nn.Module):
             {f: self.irreps_in[wrt] for f, wrt in zip(self.out_field, self.wrt)}
         )
 
+        print(self.irreps_in, flush=True)
+        print(self.irreps_out, flush=True)
+        
+
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
 
         if self.skip:
@@ -334,13 +338,13 @@ class StressOutput(GraphModuleMixin, torch.nn.Module):
             pos.requires_grad_(False)
 
         return data
-class Gradient_GradientOutput(GraphModuleMixin, torch.nn.Module):
+class HessianOutput(GraphModuleMixin, torch.nn.Module):
     r"""Wrap a model and include as an output its gradient.
     Args:
         func: the model to wrap
-        of: the name of the output field of ``func`` to take the gradient with respect to. The field must be a single scalar (i.e. have irreps ``0e``)
-        wrt: the input field(s) of ``func`` to take the gradient of ``of`` with regards to.
-        out_field: the field in which to return the computed gradients. Defaults to ``f"d({of})/d({wrt})"`` for each field in ``wrt``.
+        of: the name of the output field of ``func`` to take the hessian with respect to. The field must be a single scalar (i.e. have irreps ``0e``)
+        wrt: the input field(s) of ``func`` to take the hessian of ``of`` with regards to.
+        out_field: the field in which to return the computed hessians. Defaults to ``f"d({d({of})/d({wrt}})/d({wrt})"`` for each field in ``wrt``.
         sign: either 1 or -1; the returned gradient is multiplied by this.
     """
     sign: float
@@ -371,7 +375,7 @@ class Gradient_GradientOutput(GraphModuleMixin, torch.nn.Module):
         self.wrt = wrt
         self.func = func
         if out_field is None:
-            self.out_field = [f"d({of})/d({e})" for e in self.wrt]
+            self.out_field = [f"d(d({of})/d({wrt})/d({wrt})" for e in self.wrt]
         else:
             assert len(out_field) == len(
                 self.wrt
@@ -388,7 +392,7 @@ class Gradient_GradientOutput(GraphModuleMixin, torch.nn.Module):
         # The gradient of a single scalar w.r.t. something of a given shape and irrep just has that shape and irrep
         # Ex.: gradient of energy (0e) w.r.t. position vector (L=1) is also an L = 1 vector
         self.irreps_out.update(
-            {f: self.irreps_in[wrt] for f, wrt in zip(self.out_field, self.wrt)}
+            {'pos': 1x1o, 'edge_index': None, 'node_attrs': 3x0e, 'node_features': 8x0e, 'edge_attrs': 1x0e+1x1o+1x2e, 'edge_embedding': 8x0e, 'atomic_energy': 1x0e, 'total_energy': 1x0e, 'forces': 1x1o, 'hessian': 1x2e}
         )
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
@@ -405,7 +409,7 @@ class Gradient_GradientOutput(GraphModuleMixin, torch.nn.Module):
             wrt_tensors.append(data[k])
         # run func
         data = self.func(data)
-        # Get grads
+        # Get hessian
         grads = torch.autograd.functional.hessian(
             # TODO:
             # This makes sense for scalar batch-level or batch-wise outputs, specifically because d(sum(batches))/d wrt = sum(d batch / d wrt) = d my_batch / d wrt

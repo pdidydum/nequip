@@ -6,7 +6,7 @@
 
 # general
 root: results/aspirin
-run_name: minimal
+run_name: minimal7
 seed: 123
 dataset_seed: 456
 
@@ -23,8 +23,8 @@ num_features: 16
 # all arrays are expected to have the shape of (nframe, natom, ?) except the fixed fields
 # note that if your data set uses pbc, you need to also pass an array that maps to the nequip "pbc" key
 dataset: npz                                                                       # type of data set, can be npz or ase
-dataset_url: http://quantum-machine.org/gdml/data/npz/aspirin_ccsd.zip             # url to download the npz. optional
-dataset_file_name: ./benchmark_data/aspirin_ccsd-train.npz                         # path to data set file
+#dataset_url:             # url to download the npz. optional
+dataset_file_name: /home/akvyj/nequip/configs/aspirin_ccsd-train.npz                        # path to data set file
 key_mapping:
   z: atomic_numbers                                                                # atomic species, integers
   E: total_energy                                                                  # total potential eneriges to train to
