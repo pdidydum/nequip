@@ -39,6 +39,7 @@ _DEFAULT_NODE_FIELDS: Set[str] = {
     AtomicDataDict.ATOMIC_NUMBERS_KEY,
     AtomicDataDict.ATOM_TYPE_KEY,
     AtomicDataDict.FORCE_KEY,
+    AtomicDataDict.HESSIAN_KEY,
     AtomicDataDict.PER_ATOM_ENERGY_KEY,
     AtomicDataDict.BATCH_KEY,
 }
@@ -379,6 +380,7 @@ class AtomicData(Data):
 
         km = {
             "forces": AtomicDataDict.FORCE_KEY,
+            "force_constants": AtomicDataDict.HESSIAN_KEY,
             "energy": AtomicDataDict.TOTAL_ENERGY_KEY,
         }
         km.update(key_mapping)
@@ -493,11 +495,13 @@ class AtomicData(Data):
         energy = getattr(self, AtomicDataDict.TOTAL_ENERGY_KEY, None)
         energies = getattr(self, AtomicDataDict.PER_ATOM_ENERGY_KEY, None)
         force = getattr(self, AtomicDataDict.FORCE_KEY, None)
+        force_constants = getattr(self, AtomicDataDict.HESSIAN_KEY, None)
         do_calc = any(
             k in self
             for k in [
                 AtomicDataDict.TOTAL_ENERGY_KEY,
                 AtomicDataDict.FORCE_KEY,
+                AtomicDataDict.HESSIAN_KEY,
                 AtomicDataDict.PER_ATOM_ENERGY_KEY,
                 AtomicDataDict.STRESS_KEY,
             ]
@@ -511,6 +515,7 @@ class AtomicData(Data):
             AtomicDataDict.ATOMIC_NUMBERS_KEY,
             AtomicDataDict.TOTAL_ENERGY_KEY,
             AtomicDataDict.FORCE_KEY,
+            AtomicDataDict.HESSIAN_KEY,
             AtomicDataDict.PER_ATOM_ENERGY_KEY,
             AtomicDataDict.STRESS_KEY,
         ]
