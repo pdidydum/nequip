@@ -141,6 +141,11 @@ class NequIPCalculator(Calculator):
             self.results["forces"] = (
                 self.energy_units_to_eV / self.length_units_to_A
             ) * out[AtomicDataDict.FORCE_KEY].detach().cpu().numpy()
+        if AtomicDataDict.HESSIAN_KEY in out:
+            # hessian has units eng / len**2:
+            self.results["force_constants"] = (
+                self.energy_units_to_eV / self.length_units_to_A
+            ) * out[AtomicDataDict.HESSIAN_KEY].detach().cpu().numpy()    
         if AtomicDataDict.STRESS_KEY in out:
             stress = out[AtomicDataDict.STRESS_KEY].detach().cpu().numpy()
             stress = stress.reshape(3, 3) * (
