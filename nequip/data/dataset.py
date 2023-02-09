@@ -682,6 +682,7 @@ class NpzDataset(AtomicInMemoryDataset):
             "energy": AtomicDataDict.TOTAL_ENERGY_KEY,
             "force": AtomicDataDict.FORCE_KEY,
             "forces": AtomicDataDict.FORCE_KEY,
+            "force_constants": AtomicDataDict.HESSIAN_KEY,
             "Z": AtomicDataDict.ATOMIC_NUMBERS_KEY,
             "atomic_number": AtomicDataDict.ATOMIC_NUMBERS_KEY,
         },
