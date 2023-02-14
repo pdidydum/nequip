@@ -68,6 +68,7 @@ def ForceConstantOutput(model: GraphModuleMixin) -> HessianOutput:
     """
     if (
         AtomicDataDict.HESSIAN_KEY in model.irreps_out
-       ):
-        raise ValueError("This model already has force outputs.")
+        or AtomicDataDict.STRESS_KEY in model.irreps_out
+    ):
+        raise ValueError("This model already has force or stress outputs."
     return HessianOutput(func=model)

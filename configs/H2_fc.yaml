@@ -1,5 +1,5 @@
 root: results/Hydrogen
-run_name: Hydrogen_fc1.0
+run_name: Hydrogen_fc1.3
 seed: 123
 dataset_seed: 456
 append: True
@@ -9,6 +9,13 @@ r_max: 4.0
 l_max: 2
 parity: true
 num_features: 16
+model_builders:
+  - SimpleIrrepsConfig
+  - EnergyModel
+  - PerSpeciesRescale
+  - RescaleEnergyEtc
+  - ForceConstantOutput
+  - ForceOutput
 
 # data set
 # the keys used need to be stated at least once in key_mapping, npz_fixed_field_keys or npz_keys
@@ -22,7 +29,7 @@ key_mapping:
   E: total_energy                                                                  # total potential eneriges to train to
   F: forces                                                                        # atomic forces to train to
   R: pos
-  FC: force_constants                                                                           # raw atomic positions
+  FC: force_constants                                                                          # raw atomic positions
 npz_fixed_field_keys:                                                              # fields that are repeated across different examples
   - atomic_numbers
 
@@ -43,6 +50,8 @@ max_epochs: 50
 
 # loss function
 loss_coeffs: forces
+
+
 
 # optimizer
 optimizer_name: Adam
