@@ -1,5 +1,5 @@
 from ._eng import EnergyModel, SimpleIrrepsConfig
-from ._grads import ForceOutput, PartialForceOutput, StressForceOutput, HessianOutput
+from ._grads import ForceOutput, PartialForceOutput, StressForceOutput, ForceConstantOutput
 from ._scaling import RescaleEnergyEtc, PerSpeciesRescale
 from ._weight_init import (
     uniform_initialize_FCs,
