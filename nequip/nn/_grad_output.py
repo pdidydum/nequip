@@ -396,42 +396,29 @@ class HessianOutput(GraphModuleMixin, torch.nn.Module):
         )
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
+        data = data.copy()
+        out_data = {}
 
-        if self.skip:
-            return self.func(data)
+        def wrapper(pos: torch.Tensor) -> torch.Tensor:
+            """Wrapper from pos to atomic energy"""
+            nonlocal data, out_data
+            data[AtomicDataDict.POSITIONS_KEY] = pos
+            out_data = self.func(data)
+            return out_data[AtomicDataDict.PER_ATOM_ENERGY_KEY].squeeze(-1)
 
-        # set req grad
-        wrt_tensors = []
-        old_requires_grad: List[bool] = []
-        for k in self.wrt:
-            old_requires_grad.append(data[k].requires_grad)
-            data[k].requires_grad_(True)
-            wrt_tensors.append(data[k])
-        # run func
-        data = self.func(data)
-        # Get hessian
-        grads = torch.autograd.functional.hessian(
-            # TODO:
-            # This makes sense for scalar batch-level or batch-wise outputs, specifically because d(sum(batches))/d wrt = sum(d batch / d wrt) = d my_batch / d wrt
-            # for a well-behaved example level like energy where d other_batch / d wrt is always zero. (In other words, the energy of example 1 in the batch is completely unaffect by changes in the position of atoms in another example.)
-            # This should work for any gradient of energy, but could act suspiciously and unexpectedly for arbitrary gradient outputs, if they ever come up
-            [data[self.of].sum()],
-            wrt_tensors,
+        pos = data[AtomicDataDict.POSITIONS_KEY]
+
+        force_constants = torch.autograd.functional.hessian(
+            func=wrapper,
+            inputs=pos,
             create_graph=self.training,  # needed to allow gradients of this output during training
+            vectorize=self.vectorize,
         )
-        # return    
-        # grad is optional[tensor]?
-        for out, grad in zip(self.out_field, grads):
-            if grad is None:
-                # From the docs: "If an output doesn’t require_grad, then the gradient can be None"
-                raise RuntimeError("Something is wrong, gradient couldn't be computed")
+        #partial_forces = partial_forces.negative()
+        # output is [n_at, n_at, 3]
 
-            if self._negate:
-                grad = torch.neg(grad)
-            data[out] = grad
+        out_data[AtomicDataDict.HESSIAN_KEY] = force_constants
+        #out_data[AtomicDataDict.FORCE_KEY] = partial_forces.sum(dim=0)
 
-        # unset requires_grad_
-        for req_grad, k in zip(old_requires_grad, self.wrt):
-            data[k].requires_grad_(req_grad)
+        return out_data
 
-        return data

@@ -58,18 +58,16 @@ def StressForceOutput(model: GraphModuleMixin) -> GradientOutput:
     return StressOutputModule(func=model)
 
 def ForceConstantOutput(model: GraphModuleMixin) -> HessianOutput:
-    r"""Add force constants to a model that predicts energy and forces.
+     r"""Add forces and partial forces to a model that predicts energy.
+
     Args:
-        model: the energy model to wrap. Must have ``AtomicDataDict.HESSIAN_KEY`` as an output.
+        model: the energy model to wrap. Must have ``AtomicDataDict.TOTAL_ENERGY_KEY`` as an output.
+
     Returns:
-        A ``HessianOutput`` wrapping ``model``.
+        A ``GradientOutput`` wrapping ``model``.
     """
-    if AtomicDataDict.HESSIAN_KEY in model.irreps_out:
-        raise ValueError("This model already has force constant outputs.")
-    return HessianOutput(
-        func=model,
-        of=AtomicDataDict.TOTAL_ENERGY_KEY,
-        wrt=AtomicDataDict.POSITIONS_KEY,
-        out_field=AtomicDataDict.HESSIAN_KEY,
-        #sign=-1,  # force is the negative gradient
-    )
+    if (
+        AtomicDataDict.HESSIAN_KEY in model.irreps_out
+       ):
+        raise ValueError("This model already has force outputs.")
+    return HessianOutput(func=model)

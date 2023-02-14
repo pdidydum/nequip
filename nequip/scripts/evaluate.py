@@ -220,7 +220,7 @@ def main(args=None, running_as_script: bool = True):
         global_config = args.model.parent / "config.yaml"
         global_config = Config.from_file(str(global_config), defaults=default_config)
         _set_global_options(global_config)
-        check_code_version(global_config)
+       # check_code_version(global_config)
         del global_config
 
         # load a training session model

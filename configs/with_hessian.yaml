@@ -5,7 +5,7 @@
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
 root: /home/akvyj/results
-run_name: with_hessian1.1
+run_name: with_hessian2.8
 seed: 123                                                                         # model seed
 dataset_seed: 456                                                                 # data set seed
 append: true                                                                      # set true if a restarted run should append to the previous log file
@@ -49,19 +49,16 @@ invariant_neurons: 64                                                           
 avg_num_neighbors: auto                                                           # number of neighbors to divide by, null => no normalization, auto computes it based on dataset 
 use_sc: true                                                                      # use self-connection or not, usually gives big improvement
 
-dataset: ase
-dataset_file_name: /home/akvyj/vasps/test_train_set.extxyz                    # need to be a format accepted by ase.io.read
+dataset: npz
+dataset_file_name: /home/akvyj/Data/Hydrogen.npz                    # need to be a format accepted by ase.io.read
 dataset_key_mapping:
   forces: forces
-  energy: total_energy
-  stress: stress
+  energy: total_energy 
   force_constants: force_constants
 
 
 chemical_symbols:
-  - Mo
-  - S
-  - W
+  - H
 # logging
 wandb: False                                                                       # we recommend using wandb for logging
 wandb_project: MoWS2                                                    # project name used in wandb
@@ -73,8 +70,8 @@ save_checkpoint_freq: -1                                                        
 save_ema_checkpoint_freq: -1                                                       # frequency to save the intermediate ema checkpoint. no saving of intermediate checkpoints when the value is not positive.
 
 # training
-n_train: 1600                                                                     # number of training data
-n_val: 200                                                                         # number of validation data
+n_train: 3                                                                     # number of training data
+n_val: 0                                                                         # number of validation data
 learning_rate: 0.005                                                               # learning rate, we found values between 0.01 and 0.005 to work best - this is often one of the most important hyperparameters to tune
 batch_size: 5                                                                      # batch size, we found it important to keep this small for most applications including forces (1-5); for energy-only training, higher batch sizes work better
 validation_batch_size: 10                                                          # batch size for evaluating the model during validation. This does not affect the training results, but using the highest value possible (<=n_val) without running out of memory will speed up your training.
@@ -118,7 +115,6 @@ metrics_components:
       report_per_component: False    
   - - total_energy
     - mae
-  - - stress
   - - force_constants      
   - - total_energy
     - mae
