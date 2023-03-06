@@ -1,5 +1,5 @@
 root: results/Hydrogen
-run_name: Hydrogen_fc1.4
+run_name: Hydrogen_fc1.6
 seed: 123
 dataset_seed: 456
 append: True
@@ -16,6 +16,7 @@ model_builders:
   - RescaleEnergyEtc
   - ForceConstantOutput
   - ForceOutput
+  #- PartialForceOutput
 
 # data set
 # the keys used need to be stated at least once in key_mapping, npz_fixed_field_keys or npz_keys

@@ -109,9 +109,9 @@ class GradientOutput(GraphModuleMixin, torch.nn.Module):
             data[out] = grad
 
         # unset requires_grad_
-        for req_grad, k in zip(old_requires_grad, self.wrt):
-            data[k].requires_grad_(req_grad)
-
+        #for req_grad, k in zip(old_requires_grad, self.wrt):
+            #data[k].requires_grad_(req_grad)
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         return data
 
 
@@ -164,7 +164,7 @@ class PartialForceOutput(GraphModuleMixin, torch.nn.Module):
         partial_forces = torch.autograd.functional.jacobian(
             func=wrapper,
             inputs=pos,
-            create_graph=self.training,  # needed to allow gradients of this output during training
+            create_graph=True,  # needed to allow gradients of this output during training
             vectorize=self.vectorize,
         )
         partial_forces = partial_forces.negative()
@@ -290,7 +290,7 @@ class StressOutput(GraphModuleMixin, torch.nn.Module):
         grads = torch.autograd.grad(
             [data[AtomicDataDict.TOTAL_ENERGY_KEY].sum()],
             [pos, data["_displacement"]],
-            create_graph=self.training,  # needed to allow gradients of this output during training
+            create_graph=True,  # needed to allow gradients of this output during training
         )
 
         # Put negative sign on forces
@@ -338,6 +338,8 @@ class StressOutput(GraphModuleMixin, torch.nn.Module):
             pos.requires_grad_(False)
 
         return data
+
+@compile_mode("unsupported")        
 class HessianOutput(GraphModuleMixin, torch.nn.Module):
     r"""Wrap a model and include as an output its gradient.
     Args:
@@ -404,21 +406,23 @@ class HessianOutput(GraphModuleMixin, torch.nn.Module):
             nonlocal data, out_data
             data[AtomicDataDict.POSITIONS_KEY] = pos
             out_data = self.func(data)
-            return out_data[AtomicDataDict.PER_ATOM_ENERGY_KEY].squeeze(-1)
+            return out_data[AtomicDataDict.TOTAL_ENERGY_KEY].sum()
 
         pos = data[AtomicDataDict.POSITIONS_KEY]
 
         force_constants = torch.autograd.functional.hessian(
             func=wrapper,
             inputs=pos,
-            create_graph=self.training,  # needed to allow gradients of this output during training
-            vectorize=self.vectorize,
+            create_graph=True,  # needed to allow gradients of this output during training
+            #vectorize=self.vectorize,
         )
         #partial_forces = partial_forces.negative()
         # output is [n_at, n_at, 3]
 
         out_data[AtomicDataDict.HESSIAN_KEY] = force_constants
         #out_data[AtomicDataDict.FORCE_KEY] = partial_forces.sum(dim=0)
+
+        print(force_constants)
 
         return out_data
 

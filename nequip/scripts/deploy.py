@@ -190,7 +190,7 @@ def main(args=None):
             raise ValueError("one of --train-dir or --model must be given")
 
         _set_global_options(config)
-        check_code_version(config)
+        #check_code_version(config)
 
         # -- load model --
         if args.train_dir is not None:

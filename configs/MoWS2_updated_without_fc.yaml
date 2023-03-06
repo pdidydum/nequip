@@ -1,0 +1,75 @@
+root: results/MoWS2_No_fc
+run_name: MoWS2_No_fc_tb
+seed: 123
+dataset_seed: 456
+append: True
+# network
+num_basis: 8
+r_max: 4.0
+l_max: 2
+parity: true
+num_features: 16
+model_builders:
+  - SimpleIrrepsConfig
+  - EnergyModel
+  - PerSpeciesRescale
+  - RescaleEnergyEtc
+  #- ForceConstantOutput
+  - ForceOutput
+  #- PartialForceOutput
+
+# data set
+# the keys used need to be stated at least once in key_mapping, npz_fixed_field_keys or npz_keys
+# key_mapping is used to map the key in the npz file to the NequIP default values (see data/_key.py)
+# all arrays are expected to have the shape of (nframe, natom, ?) except the fixed fields
+# note that if your data set uses pbc, you need to also pass an array that maps to the nequip "pbc" key
+dataset: ase                                                                       # type of data set, can be npz or ase
+dataset_file_name: /home/akvyj/vasps/AllAtoms1.xyz                        # path to data set file
+dataset_key_mapping:
+  forces: forces
+  energy: total_energy
+  stress: stress
+
+
+chemical_symbols:
+  - Mo
+  - S
+  - W
+# logging
+tensorboard: true
+# verbose: debug
+
+# training
+n_train: 1800
+n_val: 200
+train_val_split: sequential
+batch_size: 50
+validation_batch_size: 50
+max_epochs: 500
+
+# loss function
+loss_coeffs: forces
+
+# output metrics
+metrics_components:
+  - - forces                               # key 
+    - mae                                  # "rmse" or "mae"
+  - - forces
+    - rmse
+  - - forces
+    - mae
+    - PerSpecies: True                     # if true, per species contribution is counted separately
+      report_per_component: False          # if true, statistics on each component (i.e. fx, fy, fz) will be counted separately
+  - - forces                                
+    - rmse                                  
+    - PerSpecies: True                     
+      report_per_component: False    
+  - - total_energy
+    - mae    
+  - - total_energy
+    - mae
+    - PerAtom: True          
+
+
+# optimizer
+optimizer_name: Adam
