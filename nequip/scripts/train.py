@@ -132,9 +132,13 @@ def fresh_start(config):
 
         trainer = TrainerWandB(model=None, **dict(config))
     else:
-        from nequip.train.trainer import Trainer
+        from torch.utils.tensorboard import SummaryWriter
 
-        trainer = Trainer(model=None, **dict(config))
+        from .trainer import Trainer, TRAIN, VALIDATION
+
+        from nequip.train.trainer_tensorboard import TrainerTensorBoard
+
+        trainer = TrainerTensorBoard(model=None, **dict(config))
 
     # what is this
     # to update wandb data?
